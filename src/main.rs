@@ -22,10 +22,6 @@ fn main() {
         Err(e) => panic!("failed to read file: {}", e),
     };
 
-    // let mut file = match File::create("pocket-to-safari.html") {
-    //     Ok(file) => file,
-    //     Err(e) => panic!("failed to open file: {}", e),
-    // };
     let mut file = BufWriter::new(File::create("pocket-to-safari.html").unwrap());
 
     let document = Html::parse_document(&input);

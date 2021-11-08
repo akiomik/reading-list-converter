@@ -1,7 +1,7 @@
 reading-list-converter
 ======================
 
-`rlconv` converts an exported reading list into other format that is importable.
+`rlconv` is a cli tool to convert an exported reading list into other format that is importable.
 
 ## Usage
 

@@ -9,7 +9,7 @@
 	<dl></dl>
   <dt><h3 folded id="com.apple.ReadingList">Reading list</h3></dt>
   <dl>
-    {% for item in items %}<dt><a href="{{ item.url|safe }}">{{ item.title|e }}</a></dt>
+    {% for item in items %}<dt><a href="{{ item.url|safe }}">{{ item.title|safe }}</a>
     {% endfor %}
   </dl>
 </html>

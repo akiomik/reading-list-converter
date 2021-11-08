@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate clap;
+
 use std::fs;
 use std::fs::File;
 use std::io::{BufWriter, Write};
@@ -5,6 +8,36 @@ use std::io::{BufWriter, Write};
 use askama::Template;
 use clap::{App, Arg};
 use scraper::{Html, Selector};
+
+arg_enum! {
+    #[derive(Debug)]
+    enum InputFormat {
+        Pocket,
+    }
+}
+
+impl InputFormat {
+    fn selector(&self) -> Selector {
+        return match self {
+            InputFormat::Pocket => Selector::parse("body > ul > li > a").unwrap(),
+        };
+    }
+}
+
+arg_enum! {
+    #[derive(Debug)]
+    enum OutputFormat {
+        Safari,
+    }
+}
+
+impl OutputFormat {
+    fn template(&self, items: Vec<Item>) -> String {
+        return match self {
+            OutputFormat::Safari => SafariTemplate { items }.render().unwrap(),
+        };
+    }
+}
 
 struct Item<'a> {
     url: &'a str,
@@ -27,10 +60,22 @@ fn main() {
                 .value_name("FILE")
                 .takes_value(true)
                 .required(true),
+            Arg::with_name("input-format")
+                .long("input-format")
+                .possible_values(&InputFormat::variants())
+                .value_name(&InputFormat::variants().join("|"))
+                .takes_value(true)
+                .required(true),
             Arg::with_name("output")
                 .long("output")
                 .value_name("FILE")
                 .takes_value(true)
+                .required(true),
+            Arg::with_name("output-format")
+                .long("output-format")
+                .takes_value(true)
+                .possible_values(&OutputFormat::variants())
+                .value_name(&OutputFormat::variants().join("|"))
                 .required(true),
         ])
         .get_matches();
@@ -41,6 +86,11 @@ fn main() {
         Err(e) => panic!("failed to read '{}': {}", input_file, e),
     };
 
+    let input_format = value_t!(matches.value_of("input-format"), InputFormat).unwrap_or_else(|e| e.exit());
+    let selector = match input_format {
+        InputFormat::Pocket => InputFormat::Pocket.selector(),
+    };
+
     let output_file = matches.value_of("output").unwrap();
     let output = match File::create(output_file) {
         Ok(output) => output,
@@ -48,8 +98,6 @@ fn main() {
     };
 
     let document = Html::parse_document(&input);
-    let selector = Selector::parse("body > ul > li > a").unwrap();
-
     let mut items: Vec<Item> = Vec::new();
     for el in document.select(&selector) {
         let maybe_href = el.value().attr("href");
@@ -60,8 +108,12 @@ fn main() {
         }
     }
 
-    let tmpl = SafariTemplate { items };
-    match BufWriter::new(output).write(tmpl.render().unwrap().as_bytes()) {
+    let output_format = value_t!(matches.value_of("output-format"), OutputFormat).unwrap_or_else(|e| e.exit());
+    let tmpl = match output_format {
+        OutputFormat::Safari => OutputFormat::Safari.template(items),
+    };
+
+    match BufWriter::new(output).write(tmpl.as_bytes()) {
         Ok(_) => (),
         Err(e) => panic!("failed to convert reading list: {}", e),
     };

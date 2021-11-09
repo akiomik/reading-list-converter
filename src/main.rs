@@ -61,7 +61,7 @@ struct Item<'a> {
 #[derive(Template)]
 #[template(path = "safari.html")]
 struct SafariTemplate<'a> {
-    items: Vec<Item<'a>>
+    items: Vec<Item<'a>>,
 }
 
 fn main() {
@@ -100,7 +100,8 @@ fn main() {
         Err(e) => panic!("failed to read '{}': {}", input_file, e),
     };
 
-    let input_format = value_t!(matches.value_of("input-format"), InputFormat).unwrap_or_else(|e| e.exit());
+    let input_format =
+        value_t!(matches.value_of("input-format"), InputFormat).unwrap_or_else(|e| e.exit());
     let selector = match input_format {
         InputFormat::Pocket => InputFormat::Pocket.selector(),
     };
@@ -117,11 +118,12 @@ fn main() {
         let maybe_href = el.value().attr("href");
         let maybe_title = el.text().next();
         if let (Some(url), Some(title)) = (maybe_href, maybe_title) {
-             items.push(Item { url, title });
+            items.push(Item { url, title });
         };
     }
 
-    let output_format = value_t!(matches.value_of("output-format"), OutputFormat).unwrap_or_else(|e| e.exit());
+    let output_format =
+        value_t!(matches.value_of("output-format"), OutputFormat).unwrap_or_else(|e| e.exit());
     let tmpl = match output_format {
         OutputFormat::Safari => OutputFormat::Safari.template(items),
     };

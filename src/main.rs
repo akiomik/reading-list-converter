@@ -56,6 +56,7 @@ impl OutputFormat {
 struct Item<'a> {
     url: &'a str,
     title: &'a str,
+    added_at: &'a str,
 }
 
 #[derive(Template)]
@@ -115,10 +116,15 @@ fn main() {
     let document = Html::parse_document(&input);
     let mut items: Vec<Item> = Vec::new();
     for el in document.select(&selector) {
-        let maybe_href = el.value().attr("href");
+        let maybe_url = el.value().attr("href");
         let maybe_title = el.text().next();
-        if let (Some(url), Some(title)) = (maybe_href, maybe_title) {
-            items.push(Item { url, title });
+        let maybe_added_at = el.value().attr("time_added");
+        if let (Some(url), Some(title), Some(added_at)) = (maybe_url, maybe_title, maybe_added_at) {
+            items.push(Item {
+                url,
+                title,
+                added_at,
+            });
         };
     }
 

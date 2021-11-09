@@ -2,14 +2,9 @@
 	<html>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Bookmark</title>
-	<h1>Bookmark</h1>
-  <dt><h3 folded>Favorites</h3></dt>
-  <dl></dl>
-  <dt><h3 folded>Bookmark Menu</h3></dt>
-	<dl></dl>
   <dt><h3 folded id="com.apple.ReadingList">Reading list</h3></dt>
-  <dl>
-    {% for item in items %}<dt><a href="{{ item.url|safe }}">{{ item.title|safe }}</a>
+  <dl><p>
+    {% for item in items %}<dt><a href="{{ item.url|safe }}" add_date="{{ item.added_at }}">{{ item.title|safe }}</a>
     {% endfor %}
   </dl>
 </html>

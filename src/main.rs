@@ -19,51 +19,12 @@ use std::fs;
 use std::fs::File;
 use std::io::{BufWriter, Write};
 
-use askama::Template;
 use clap::{App, Arg};
-use scraper::{Html, Selector};
+use scraper::Html;
 
-arg_enum! {
-    #[derive(Debug)]
-    enum InputFormat {
-        Pocket,
-    }
-}
-
-impl InputFormat {
-    fn selector(&self) -> Selector {
-        match self {
-            InputFormat::Pocket => Selector::parse("body > ul > li > a").unwrap(),
-        }
-    }
-}
-
-arg_enum! {
-    #[derive(Debug)]
-    enum OutputFormat {
-        Safari,
-    }
-}
-
-impl OutputFormat {
-    fn template(&self, items: Vec<Item>) -> String {
-        match self {
-            OutputFormat::Safari => SafariTemplate { items }.render().unwrap(),
-        }
-    }
-}
-
-struct Item<'a> {
-    url: &'a str,
-    title: &'a str,
-    added_at: &'a str,
-}
-
-#[derive(Template)]
-#[template(path = "safari.html")]
-struct SafariTemplate<'a> {
-    items: Vec<Item<'a>>,
-}
+use reading_list_converter::input::InputFormat;
+use reading_list_converter::item::Item;
+use reading_list_converter::output::OutputFormat;
 
 fn main() {
     let matches = App::new("reading-list-converter")

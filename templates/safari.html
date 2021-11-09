@@ -1,7 +1,7 @@
 <!doctype netscape-bookmark-file-1>
-	<html>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>Bookmark</title>
+  <html>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Bookmark</title>
   <dt><h3 folded id="com.apple.ReadingList">Reading list</h3></dt>
   <dl><p>
     {% for item in items %}<dt><a href="{{ item.url|safe }}" add_date="{{ item.added_at }}">{{ item.title|safe }}</a>

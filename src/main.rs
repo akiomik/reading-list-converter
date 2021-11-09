@@ -32,9 +32,9 @@ arg_enum! {
 
 impl InputFormat {
     fn selector(&self) -> Selector {
-        return match self {
+        match self {
             InputFormat::Pocket => Selector::parse("body > ul > li > a").unwrap(),
-        };
+        }
     }
 }
 
@@ -47,9 +47,9 @@ arg_enum! {
 
 impl OutputFormat {
     fn template(&self, items: Vec<Item>) -> String {
-        return match self {
+        match self {
             OutputFormat::Safari => SafariTemplate { items }.render().unwrap(),
-        };
+        }
     }
 }
 
@@ -116,10 +116,9 @@ fn main() {
     for el in document.select(&selector) {
         let maybe_href = el.value().attr("href");
         let maybe_title = el.text().next();
-        match (maybe_href, maybe_title) {
-            (Some(url), Some(title)) => items.push(Item { url, title }),
-            _ => (),
-        }
+        if let (Some(url), Some(title)) = (maybe_href, maybe_title) {
+             items.push(Item { url, title });
+        };
     }
 
     let output_format = value_t!(matches.value_of("output-format"), OutputFormat).unwrap_or_else(|e| e.exit());
